@@ -1,5 +1,3 @@
-let gameBoard = ["", "", "", "", "", "", "", "", ""];
-
 const Player = (name, mark) => {
     const makeMove = (gameBoard, index) => {
         gameBoard[index] = mark;
@@ -8,7 +6,7 @@ const Player = (name, mark) => {
     return { name, mark, makeMove };
 };
 
-const displayHandler = () => {
+const displayHandler = (gameBoard) => {
     // Gameboard
     const createBox = (elem, index) => {
         const box = document.createElement("div");
@@ -27,7 +25,9 @@ const displayHandler = () => {
         });
     };
     const cleanBoard = () => {
-        const isBoard = Array.from(document.querySelector("#game-board").children);
+        const isBoard = Array.from(
+            document.querySelector("#game-board").children
+        );
         if (isBoard.length < 1) return;
         isBoard.forEach((elem) => elem.remove());
     };
@@ -46,45 +46,55 @@ const displayHandler = () => {
         renderMessage,
     };
 };
-const gameHandler = () => {
-    let _turn = "player";
-    const display = displayHandler();
 
-    const attachEvents = (func, p1, p2) => {
-        const boxesInGrid = Array.from(document.querySelector("#game-board").children);
-        const emptyBoxes = boxesInGrid.filter((box) => box.textContent === "");
-        emptyBoxes.forEach((box) => {
-            const index = parseInt(box.getAttribute("data-idx"));
-            box.addEventListener(
-                "click",
-                () => {
-                    func(gameBoard, index);
-                    gameLoop(p1, p2);
-                },
-                { once: true }
-            );
-        });
+const gameHandler = () => {
+    const gameBoard = ["", "", "", "", "", "", "", "", ""];
+    let _turn = "player";
+    const display = displayHandler(gameBoard);
+
+    const getEmptyBoxes = () => {
+        const boxesInGrid = Array.from(
+            document.querySelector("#game-board").children
+        );
+        const emptyBoxes = boxesInGrid.filter(
+            (box) => box.textContent.length < 1
+        );
+        return emptyBoxes;
     };
-    const handleMoves = (p1, p2) => {
-        console.log(_turn);
+
+    const computerMove = () => {
+        const emptyIndexes = [];
+        gameBoard.forEach((elem, idx) => {
+            if (elem === "") emptyIndexes.push(idx);
+        });
+        const index = Math.min(...emptyIndexes);
+        gameBoard[index] = "O";
+        _turn = "player";
+        gameLoop();
+    };
+    // Gameloop
+    const gameLoop = () => {
+        console.log("Drawing board");
+        display.drawBoard();
+        const emptyBoxes = getEmptyBoxes();
+
         if (_turn === "player") {
-            display.renderMessage(`${p1.name} turn`);
-            attachEvents(p1.makeMove, p1, p2);
-            _turn = "computer";
+            console.log("Adding listeners");
+            emptyBoxes.forEach((elem) =>
+                elem.addEventListener(
+                    "click",
+                    () => {
+                        const index = parseInt(elem.getAttribute("data-idx"));
+                        gameBoard[index] = "X";
+                        _turn = "computer";
+                        gameLoop();
+                    },
+                    { once: true }
+                )
+            );
             return;
         }
-        display.renderMessage(`${p2.name} turn`);
-        attachEvents(p2.makeMove, p1, p2);
-        _turn = "player";
-    };
-    // gameLoop
-    const gameLoop = (p1, p2) => {
-        display.drawBoard();
-        handleMoves(p1, p2);
-        // Switch players
-        // Update board on moves
-        // check who won
-        // Display necessary messages
+        computerMove();
     };
 
     const checkWinner = () => {};
@@ -94,14 +104,17 @@ const gameHandler = () => {
 const restartBtn = document.querySelector("#restart-game");
 document.querySelector("#play-game").addEventListener("click", function () {
     const game = gameHandler();
+
+    // Removing ~Play game~ button
     this.style.display = "none";
+    // Displaying ~Restart game~ button
     restartBtn.style.display = "block";
 
     const name = prompt("Enter your name:") || "Guest";
     const player = Player(name, "X");
     const computer = Player("Computer", "O");
 
-    game.gameLoop(player, computer);
+    game.gameLoop();
 });
 
 restartBtn.addEventListener("click", () => {
