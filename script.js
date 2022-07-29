@@ -70,8 +70,10 @@ const gameHandler = () => {
         const index = Math.min(...emptyIndexes);
         gameBoard[index] = "O";
         _turn = "player";
+        checkWinner();
         gameLoop();
     };
+
     // Gameloop
     const gameLoop = () => {
         console.log("Drawing board");
@@ -87,6 +89,7 @@ const gameHandler = () => {
                         const index = parseInt(elem.getAttribute("data-idx"));
                         gameBoard[index] = "X";
                         _turn = "computer";
+                        checkWinner();
                         gameLoop();
                     },
                     { once: true }
@@ -97,7 +100,118 @@ const gameHandler = () => {
         computerMove();
     };
 
-    const checkWinner = () => {};
+    const checkWinner = () => {
+        /*
+        
+          0  |  1  |  2   
+        _____|_____|_____
+          3  |  4  |  5   
+        _____|_____|_____
+          6  |  7  |  8   
+             |     |
+
+        */
+        for (let i = 0; i < 3; i++) {
+            if (
+                gameBoard[i] === "X" &&
+                gameBoard[i + 3] === "X" &&
+                gameBoard[i + 6] === "X"
+            ) {
+                return true;
+            }
+
+            if (
+                i === 0 &&
+                gameBoard[i] === "X" &&
+                gameBoard[i + 4] === "X" &&
+                gameBoard[i + 8] === "X"
+            ) {
+                return true;
+            }
+
+            if (
+                i === 2 &&
+                gameBoard[i] === "X" &&
+                gameBoard[i + 2] === "X" &&
+                gameBoard[i + 4] === "X"
+            ) {
+                return true;
+            }
+
+            if (
+                i === 0 &&
+                gameBoard[i] === "X" &&
+                gameBoard[i + 1] === "X" &&
+                gameBoard[i + 2] === "X"
+            ) {
+                return true;
+            }
+
+            if (
+                gameBoard[3] === "X" &&
+                gameBoard[4] === "X" &&
+                gameBoard[5] === "X"
+            ) {
+                return true;
+            }
+            if (
+                gameBoard[6] === "X" &&
+                gameBoard[7] === "X" &&
+                gameBoard[8] === "X"
+            ) {
+                return true;
+            }
+            if (
+                gameBoard[i] === "O" &&
+                gameBoard[i + 3] === "O" &&
+                gameBoard[i + 6] === "O"
+            ) {
+                return false;
+            }
+
+            if (
+                i === 0 &&
+                gameBoard[i] === "O" &&
+                gameBoard[i + 4] === "O" &&
+                gameBoard[i + 8] === "O"
+            ) {
+                return false;
+            }
+
+            if (
+                i === 2 &&
+                gameBoard[i] === "O" &&
+                gameBoard[i + 2] === "O" &&
+                gameBoard[i + 4] === "O"
+            ) {
+                return false;
+            }
+
+            if (
+                i === 0 &&
+                gameBoard[i] === "O" &&
+                gameBoard[i + 1] === "O" &&
+                gameBoard[i + 2] === "O"
+            ) {
+                return false;
+            }
+
+            if (
+                gameBoard[3] === "O" &&
+                gameBoard[4] === "O" &&
+                gameBoard[5] === "O"
+            ) {
+                return false;
+            }
+            if (
+                gameBoard[6] === "O" &&
+                gameBoard[7] === "O" &&
+                gameBoard[8] === "O"
+            ) {
+                return false;
+            }
+        }
+    };
 
     return { gameLoop };
 };
