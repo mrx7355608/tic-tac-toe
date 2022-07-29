@@ -48,7 +48,7 @@ const displayHandler = (gameBoard) => {
 };
 
 const gameHandler = () => {
-    const gameBoard = ["", "", "", "", "", "", "", "", ""];
+    let gameBoard = ["", "", "", "", "", "", "", "", ""];
     let _turn = "player";
     const display = displayHandler(gameBoard);
 
@@ -70,7 +70,8 @@ const gameHandler = () => {
         const index = Math.min(...emptyIndexes);
         gameBoard[index] = "O";
         _turn = "player";
-        checkWinner();
+        const playerWon = checkWinner();
+        if (playerWon === false) display.renderMessage("Computer won");
         gameLoop();
     };
 
@@ -89,7 +90,10 @@ const gameHandler = () => {
                         const index = parseInt(elem.getAttribute("data-idx"));
                         gameBoard[index] = "X";
                         _turn = "computer";
-                        checkWinner();
+                        const isWinner = checkWinner();
+                        if (isWinner) {
+                            display.renderMessage("Player won the match");
+                        }
                         gameLoop();
                     },
                     { once: true }
