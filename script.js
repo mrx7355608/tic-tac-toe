@@ -6,7 +6,7 @@ const Player = (name, mark) => {
     return { name, mark, makeMove };
 };
 
-const displayHandler = (gameBoard) => {
+const displayHandler = () => {
     // Gameboard
     const createBox = (elem, index) => {
         const box = document.createElement("div");
@@ -18,22 +18,20 @@ const displayHandler = (gameBoard) => {
 
         return box;
     };
-    const createBoard = () => {
+    const createBoard = (gameBoard) => {
         gameBoard.forEach((elem, index) => {
             const box = createBox(elem, index);
             document.querySelector("#game-board").appendChild(box);
         });
     };
     const cleanBoard = () => {
-        const isBoard = Array.from(
-            document.querySelector("#game-board").children
-        );
+        const isBoard = Array.from(document.querySelector("#game-board").children);
         if (isBoard.length < 1) return;
         isBoard.forEach((elem) => elem.remove());
     };
-    const drawBoard = () => {
+    const drawBoard = (gameBoard) => {
         cleanBoard();
-        createBoard();
+        createBoard(gameBoard);
     };
 
     // Render messages on screen
@@ -47,61 +45,70 @@ const displayHandler = (gameBoard) => {
     };
 };
 
-const gameHandler = () => {
-    let gameBoard = ["", "", "", "", "", "", "", "", ""];
-    let _turn = "player";
+const gameHandler = (player1, player2) => {
+    const gameBoard = ["", "", "", "", "", "", "", "", ""];
+    let _turn = "player1";
     const display = displayHandler(gameBoard);
 
-    const getEmptyBoxes = () => {
-        const boxesInGrid = Array.from(
-            document.querySelector("#game-board").children
-        );
-        const emptyBoxes = boxesInGrid.filter(
-            (box) => box.textContent.length < 1
-        );
+    const getEmptyBoxesInGrid = () => {
+        const boxesInGrid = Array.from(document.querySelector("#game-board").children);
+        const emptyBoxes = boxesInGrid.filter((box) => box.textContent.length < 1);
         return emptyBoxes;
     };
 
-    const computerMove = () => {
+    const computerMove = (player) => {
         const emptyIndexes = [];
         gameBoard.forEach((elem, idx) => {
             if (elem === "") emptyIndexes.push(idx);
         });
         const index = Math.min(...emptyIndexes);
         gameBoard[index] = "O";
-        _turn = "player";
         const playerWon = checkWinner();
-        if (playerWon === false) display.renderMessage("Computer won");
-        gameLoop();
+        if (playerWon === false) return endGame(player);
+        display.drawBoard(gameBoard);
+        _turn = "player1";
+        return gameLoop();
     };
 
-    // Gameloop
+    const endGame = (player) => {
+        display.renderMessage(`${player.name} has won the game`);
+        display.drawBoard(gameBoard);
+    };
+
+    // Handling players moves
+    const handlePlayerMoves = (player) => {
+        const emptyBoxes = getEmptyBoxesInGrid();
+        emptyBoxes.map((element) => {
+            element.addEventListener(
+                "click",
+                () => {
+                    const index = parseInt(element.getAttribute("data-idx"));
+                    player.makeMove(gameBoard, index);
+
+                    const isWinner = checkWinner();
+                    if (isWinner === true) return endGame(player);
+
+                    // Here false means that, Player2 has won
+                    // if (isWinner === false) return endGame(player);
+                    // Add tie condition
+                    _turn = "player2";
+                    return gameLoop();
+                },
+                { once: true }
+            );
+        });
+    };
+
     const gameLoop = () => {
         console.log("Drawing board");
-        display.drawBoard();
-        const emptyBoxes = getEmptyBoxes();
+        display.drawBoard(gameBoard);
 
-        if (_turn === "player") {
-            console.log("Adding listeners");
-            emptyBoxes.forEach((elem) =>
-                elem.addEventListener(
-                    "click",
-                    () => {
-                        const index = parseInt(elem.getAttribute("data-idx"));
-                        gameBoard[index] = "X";
-                        _turn = "computer";
-                        const isWinner = checkWinner();
-                        if (isWinner) {
-                            display.renderMessage("Player won the match");
-                        }
-                        gameLoop();
-                    },
-                    { once: true }
-                )
-            );
-            return;
+        if (_turn === "player1") {
+            handlePlayerMoves(player1);
+        } else {
+            computerMove(player2);
+            // handlePlayerMoves(player2);
         }
-        computerMove();
     };
 
     const checkWinner = () => {
@@ -151,18 +158,10 @@ const gameHandler = () => {
                 return true;
             }
 
-            if (
-                gameBoard[3] === "X" &&
-                gameBoard[4] === "X" &&
-                gameBoard[5] === "X"
-            ) {
+            if (gameBoard[3] === "X" && gameBoard[4] === "X" && gameBoard[5] === "X") {
                 return true;
             }
-            if (
-                gameBoard[6] === "X" &&
-                gameBoard[7] === "X" &&
-                gameBoard[8] === "X"
-            ) {
+            if (gameBoard[6] === "X" && gameBoard[7] === "X" && gameBoard[8] === "X") {
                 return true;
             }
             if (
@@ -200,18 +199,10 @@ const gameHandler = () => {
                 return false;
             }
 
-            if (
-                gameBoard[3] === "O" &&
-                gameBoard[4] === "O" &&
-                gameBoard[5] === "O"
-            ) {
+            if (gameBoard[3] === "O" && gameBoard[4] === "O" && gameBoard[5] === "O") {
                 return false;
             }
-            if (
-                gameBoard[6] === "O" &&
-                gameBoard[7] === "O" &&
-                gameBoard[8] === "O"
-            ) {
+            if (gameBoard[6] === "O" && gameBoard[7] === "O" && gameBoard[8] === "O") {
                 return false;
             }
         }
@@ -221,24 +212,21 @@ const gameHandler = () => {
 };
 const restartBtn = document.querySelector("#restart-game");
 document.querySelector("#play-game").addEventListener("click", function () {
-    const game = gameHandler();
-
     // Removing ~Play game~ button
     this.style.display = "none";
+
     // Displaying ~Restart game~ button
     restartBtn.style.display = "block";
 
+    // Creating players
     const name = prompt("Enter your name:") || "Guest";
-    const player = Player(name, "X");
-    const computer = Player("Computer", "O");
+    const player1 = Player(name, "X");
+    const player2 = Player("Computer", "O");
 
+    const game = gameHandler(player1, player2);
     game.gameLoop();
-});
 
-restartBtn.addEventListener("click", () => {
-    gameBoard = ["", "", "", "", "", "", "", "", ""];
-    const name = prompt("Enter your name:") || "Guest";
-    const player = Player(name, "X");
-    const computer = Player("Computer", "O");
-    gameHandler().gameLoop(player, computer);
+    restartBtn.addEventListener("click", () => {
+        game.gameLoop();
+    });
 });
