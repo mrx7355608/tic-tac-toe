@@ -1,3 +1,4 @@
+// Player factory function
 const Player = (name, mark) => {
     const makeMove = (gameBoard, index) => {
         gameBoard[index] = mark;
@@ -5,9 +6,10 @@ const Player = (name, mark) => {
 
     return { name, mark, makeMove };
 };
-
+// Display handling module
 const displayHandler = () => {
     // Gameboard
+    // Creates boxes for the grid
     const createBox = (elem, index) => {
         const box = document.createElement("div");
         const text = document.createElement("p");
@@ -18,44 +20,52 @@ const displayHandler = () => {
 
         return box;
     };
+
+    // Creates a 3x3 grid of the game
     const createBoard = (gameBoard) => {
         gameBoard.forEach((elem, index) => {
             const box = createBox(elem, index);
             document.querySelector("#game-board").appendChild(box);
         });
     };
+
+    // Cleans the game board (use to re-render the board when user makes a move)
     const cleanBoard = () => {
         const isBoard = Array.from(document.querySelector("#game-board").children);
         if (isBoard.length < 1) return;
         isBoard.forEach((elem) => elem.remove());
     };
+
+    // Draws the game board on the screen (browser)
     const drawBoard = (gameBoard) => {
         cleanBoard();
         createBoard(gameBoard);
     };
 
     // Render messages on screen
+    // Used for displaying winning/tie messages
     const renderMessage = (message) => {
         document.querySelector("#message").innerText = message;
     };
-
     return {
         drawBoard,
         renderMessage,
     };
 };
-
+// Game handling module
 const gameHandler = (player1, player2) => {
     const gameBoard = ["", "", "", "", "", "", "", "", ""];
     let _turn = "player1";
     const display = displayHandler(gameBoard);
 
+    // Extracting empty boxes from the 3x3 grid of the game
     const getEmptyBoxesInGrid = () => {
         const boxesInGrid = Array.from(document.querySelector("#game-board").children);
         const emptyBoxes = boxesInGrid.filter((box) => box.textContent.length < 1);
         return emptyBoxes;
     };
 
+    // Computer making random moves
     const computerMove = (player) => {
         const emptyIndexes = [];
         gameBoard.forEach((elem, idx) => {
@@ -70,12 +80,13 @@ const gameHandler = (player1, player2) => {
         return gameLoop();
     };
 
+    // Removes event listeners and shows win/tie messages
     const endGame = (player) => {
         display.renderMessage(`${player.name} has won the game`);
         display.drawBoard(gameBoard);
     };
 
-    // Handling players moves
+    // Handles players moves
     const handlePlayerMoves = (player) => {
         const emptyBoxes = getEmptyBoxesInGrid();
         emptyBoxes.map((element) => {
@@ -99,6 +110,7 @@ const gameHandler = (player1, player2) => {
         });
     };
 
+    // Main game loop
     const gameLoop = () => {
         console.log("Drawing board");
         display.drawBoard(gameBoard);
@@ -111,6 +123,7 @@ const gameHandler = (player1, player2) => {
         }
     };
 
+    // Checking winner
     const checkWinner = () => {
         /*
         
@@ -210,12 +223,16 @@ const gameHandler = (player1, player2) => {
 
     return { gameLoop };
 };
+
 const restartBtn = document.querySelector("#restart-game");
-document.querySelector("#play-game").addEventListener("click", function () {
-    // Removing ~Play game~ button
+const startBtn = document.querySelector("#play-game");
+const messageBox = document.querySelector("#message");
+
+startBtn.addEventListener("click", function () {
+    // Removing "Play game" button
     this.style.display = "none";
 
-    // Displaying ~Restart game~ button
+    // Displaying "Restart game" button
     restartBtn.style.display = "block";
 
     // Creating players
@@ -223,10 +240,10 @@ document.querySelector("#play-game").addEventListener("click", function () {
     const player1 = Player(name, "X");
     const player2 = Player("Computer", "O");
 
+    // Starting game
+    messageBox.style.display = "block";
     const game = gameHandler(player1, player2);
     game.gameLoop();
-
-    restartBtn.addEventListener("click", () => {
-        game.gameLoop();
-    });
 });
+
+restartBtn.addEventListener("click", () => {});
