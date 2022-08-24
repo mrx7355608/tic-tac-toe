@@ -5,10 +5,25 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="style.css" />
+        <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
+        <script src="script.js" defer></script>
         <title>Tic Tac Toe</title>
     </head>
     <body>
-        <h1>Tic Tac Toe</h1>
-        <script src="script.js"></script>
+        <main>
+            <img id="logo" src="./logo.png" alt="logo" />
+            <h1>Tic Tac Toe</h1>
+            <button onclick="startGame()" id="start-game">Start</button>
+            <button onclick="restartGame()" id="restart-game">Restart</button>
+            <div class="game-board"></div>
+        </main>
+        <footer>
+            <a
+                target="_blank"
+                href="https://icons8.com/icon/DkwSArXCvIbv/tic-tac-toe"
+                >Tic Tac Toe</a
+            >
+            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+        </footer>
     </body>
 </html>
