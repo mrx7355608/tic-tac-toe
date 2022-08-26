@@ -11,19 +11,43 @@
     </head>
     <body>
         <main>
-            <img id="logo" src="./logo.png" alt="logo" />
-            <h1>Tic Tac Toe</h1>
-            <button onclick="startGame()" id="start-game">Start</button>
+            <section class="top-part">
+                <img id="logo" src="./logo.png" alt="logo" />
+                <h1>Tic Tac Toe</h1>
+            </section>
+            <section class="user-data">
+                <input
+                    type="text"
+                    name="username"
+                    id="userName"
+                    placeholder="Enter your name."
+                />
+                <button onclick="startGame()" id="start-game">Start</button>
+            </section>
+
             <button onclick="restartGame()" id="restart-game">Restart</button>
-            <div class="game-board"></div>
         </main>
         <footer>
-            <a
-                target="_blank"
-                href="https://icons8.com/icon/DkwSArXCvIbv/tic-tac-toe"
-                >Tic Tac Toe</a
-            >
-            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+            <p>
+                Developed by Fawad Imran
+                <a href="https://github.com/mrx7355608" target="_blank">
+                    <img src="./github.png" alt="github" />
+                </a>
+            </p>
+            <!-- <p>
+                <a
+                    target="_blank"
+                    href="https://icons8.com/icon/DkwSArXCvIbv/tic-tac-toe"
+                    >Tic Tac Toe</a
+                >
+                icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+            </p>
+            <p>
+                <a target="_blank" href="https://icons8.com/icon/106564/github"
+                    >GitHub</a
+                >
+                icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+            </p> -->
         </footer>
     </body>
 </html>
