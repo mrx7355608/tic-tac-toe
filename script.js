@@ -1,7 +1,23 @@
-const gameController = function (player) {
+const gameController = (function () {
     let _board = ["", "", "", "", "", "", "", "", ""];
-    let _turn = "computer";
 
+    const makeMoves = function () {
+        this.innerText = "O";
+        _board[this.dataset.id] = "O";
+        let winner = null;
+        if (_checkWinner()) {
+            winner = "You";
+        } else {
+            _computerMove.apply(this);
+            if (_checkWinner()) {
+                winner = "Computer";
+            }
+        }
+        // Display a winner message
+        if (winner)
+            displayController.showAlert(`${winner} won the game`, "success");
+        return;
+    };
     const renderBoard = function () {
         const grid = document.createElement("div");
         grid.classList.add("game-board");
@@ -14,7 +30,7 @@ const gameController = function (player) {
             cell.dataset.id = index;
 
             cell.classList.add("cell");
-            cell.addEventListener("click", addMark, { once: true });
+            cell.addEventListener("click", makeMoves, { once: true });
 
             return cell;
         });
@@ -28,8 +44,27 @@ const gameController = function (player) {
         // Rendering board again
         renderBoard();
     };
-    const addMark = function () {};
-    const _checkWinner = function () {
+    const _computerMove = function () {
+        const emptyGridCells = [];
+        _board.forEach((elem, index) => {
+            if (elem === "") emptyGridCells.push(index);
+        });
+        const move = Math.min(...emptyGridCells);
+
+        _board[move] = "X";
+        Array.from(document.querySelector(".game-board").children).forEach(
+            (elem, index) => {
+                if (elem.dataset.id === String(move)) elem.innerText = "X";
+            }
+        );
+    };
+    const _removeAllBinds = function () {
+        const gridCells = document.querySelector(".game-board").children;
+        Array.from(gridCells).forEach((node) => {
+            node.removeEventListener("click", makeMoves);
+        });
+    };
+    const _checkWinner = function (currentPlayer) {
         if (
             (_board[0] && _board[0] === _board[1] && _board[1] === _board[2]) ||
             (_board[3] && _board[3] === _board[4] && _board[4] === _board[5]) ||
@@ -40,33 +75,35 @@ const gameController = function (player) {
             (_board[0] && _board[0] === _board[4] && _board[4] === _board[8]) ||
             (_board[2] && _board[2] === _board[4] && _board[4] === _board[6])
         ) {
-            console.log("We have a winner!");
+            // Remove all binds   i.e stop the game
+            _removeAllBinds();
+            return true;
+        } else if (
+            _board[0] &&
+            _board[1] &&
+            _board[2] &&
+            _board[3] &&
+            _board[4] &&
+            _board[5] &&
+            _board[6] &&
+            _board[7] &&
+            _board[8]
+        ) {
+            _removeAllBinds();
+            displayController.showAlert("Its a tie!");
         }
     };
-    const _computerMove = function () {
-        // Filter out indexes of empty boxes in board
-        const emptyIndexes = [];
-        _board.forEach((elem, index) => {
-            if (elem === "") emptyIndexes.push(index);
-        });
-        // Generate a random number
-        // const limit = Math.max(...emptyIndexes);
-        // console.log("limit: ", limit);
-        // const randomNumber = Math.floor(Math.random() * limit);
-        // console.log(randomNumber);
-        // Use the random number to choose an index from array
-        const moveIndex = Math.min(...emptyIndexes);
-        return moveIndex;
-    };
     return { renderBoard, restartGame };
-};
+})();
 // Display module
 const displayController = (function () {
-    const showAlert = function (message) {
+    const showAlert = function (message, alertType = "info") {
         const alert = document.createElement("div");
         const textElement = document.createElement("p");
 
+        const alertColor = alertType === "success" ? "#00be7f" : "deepskyblue";
         alert.classList.add("alert");
+        alert.style.backgroundColor = alertColor;
         textElement.innerText = message;
 
         alert.appendChild(textElement);
@@ -91,11 +128,10 @@ const startGame = function () {
     const player = Player(username);
 
     // Initializing game
-    const game = gameController(player);
-    game.renderBoard();
+    gameController.renderBoard();
 
     // Greeting user
-    displayController.showAlert(`Welcome! ${username}`);
+    displayController.showAlert(`Welcome! ${player.name}`);
 
     // Some dom stuff
     document.querySelector("#start-game").style.display = "none";
@@ -104,6 +140,5 @@ const startGame = function () {
 };
 const restartGame = function () {
     const player = Player(username);
-    const game = gameController(player);
-    game.restartGame();
+    gameController.restartGame();
 };

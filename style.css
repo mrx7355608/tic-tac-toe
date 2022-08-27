@@ -171,9 +171,9 @@ footer > p > a > img:hover {
 
     z-index: 1;
     border-radius: 5px;
-    padding: 10px 20px;
+    padding: 13px 28px;
     color: white;
     font-weight: 500;
-    font-size: 0.88rem;
-    background: rgb(72, 209, 255);
+    font-size: 15px;
+    letter-spacing: 1px;
 }
