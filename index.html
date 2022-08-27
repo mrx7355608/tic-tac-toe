@@ -5,14 +5,49 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="style.css" />
+        <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
+        <script src="script.js" defer></script>
         <title>Tic Tac Toe</title>
     </head>
     <body>
-        <h1>Tic Tac Toe</h1>
-        <p id="message">Welcome</p>
-        <section id="game-board"></section>
-        <button id="play-game">Play game</button>
-        <button id="restart-game">Restart game</button>
-        <script src="script.js"></script>
+        <main>
+            <section class="top-part">
+                <img id="logo" src="./logo.png" alt="logo" />
+                <h1>Tic Tac Toe</h1>
+            </section>
+            <section class="user-data">
+                <input
+                    type="text"
+                    name="username"
+                    id="userName"
+                    placeholder="Enter your name."
+                />
+                <button onclick="startGame()" id="start-game">Start</button>
+            </section>
+
+            <button onclick="restartGame()" id="restart-game">Restart</button>
+        </main>
+        <footer>
+            <p>
+                Developed by Fawad Imran
+                <a href="https://github.com/mrx7355608" target="_blank">
+                    <img src="./github.png" alt="github" />
+                </a>
+            </p>
+            <!-- <p>
+                <a
+                    target="_blank"
+                    href="https://icons8.com/icon/DkwSArXCvIbv/tic-tac-toe"
+                    >Tic Tac Toe</a
+                >
+                icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+            </p>
+            <p>
+                <a target="_blank" href="https://icons8.com/icon/106564/github"
+                    >GitHub</a
+                >
+                icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+            </p> -->
+        </footer>
     </body>
 </html>
