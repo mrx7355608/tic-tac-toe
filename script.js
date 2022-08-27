@@ -2,28 +2,41 @@ const gameController = (function () {
     let _board = ["", "", "", "", "", "", "", "", ""];
 
     const makeMoves = function () {
+        let winner = null;
+
+        // Player's move
         this.innerText = "O";
         _board[this.dataset.id] = "O";
-        let winner = null;
-        if (_checkWinner()) {
+
+        const isPlayerWinner = _checkWinner();
+        if (isPlayerWinner) {
+            // If player won, we changed the `winner` from "null" to "You"
+            // Changing the winner to "You" will assist in displaying winner message
             winner = "You";
         } else {
+            // If player does not won the game, Computer will make his move
             _computerMove.apply(this);
-            if (_checkWinner()) {
+
+            const isComputerWinner = _checkWinner();
+            if (isComputerWinner) {
+                // If computer won, we changed the `winner` from "null" to "Computer"
                 winner = "Computer";
             }
         }
-        // Display a winner message
+        // Display a winner message, if there is a one (default: null)
         if (winner)
             displayController.showAlert(`${winner} won the game`, "success");
         return;
     };
     const renderBoard = function () {
+        // Creating a grid container
         const grid = document.createElement("div");
         grid.classList.add("game-board");
 
+        // Appending grid in DOM
         document.querySelector("main").appendChild(grid);
 
+        // Creating grid cells / boxes
         const gridCells = _board.map((elem, index) => {
             const cell = document.createElement("div");
             cell.innerText = elem;
@@ -34,6 +47,8 @@ const gameController = (function () {
 
             return cell;
         });
+
+        // Appending the grid cells in the grid container
         document.querySelector(".game-board").append(...gridCells);
     };
     const restartGame = function () {
@@ -45,21 +60,31 @@ const gameController = (function () {
         renderBoard();
     };
     const _computerMove = function () {
+        // Collecting indexes of empty cells on the grid
         const emptyGridCells = [];
         _board.forEach((elem, index) => {
             if (elem === "") emptyGridCells.push(index);
         });
+
+        // Choosing the minimum index value
         const move = Math.min(...emptyGridCells);
 
+        // Making move
         _board[move] = "X";
         Array.from(document.querySelector(".game-board").children).forEach(
-            (elem, index) => {
-                if (elem.dataset.id === String(move)) elem.innerText = "X";
+            (elem) => {
+                // Changing the text value of the chosen grid cell in DOM
+                if (elem.dataset.id === String(move)) {
+                    elem.innerText = "X";
+                    elem.removeEventListener("click", makeMoves);
+                }
             }
         );
     };
     const _removeAllBinds = function () {
+        // Fetching all grid cells
         const gridCells = document.querySelector(".game-board").children;
+        // Removing the event listeners
         Array.from(gridCells).forEach((node) => {
             node.removeEventListener("click", makeMoves);
         });
@@ -95,43 +120,40 @@ const gameController = (function () {
     };
     return { renderBoard, restartGame };
 })();
+
 // Display module
 const displayController = (function () {
     const showAlert = function (message, alertType = "info") {
+        // Creating alert and a text container
         const alert = document.createElement("div");
         const textElement = document.createElement("p");
 
+        // Choosing a color based on alert type (default: info)
         const alertColor = alertType === "success" ? "#00be7f" : "deepskyblue";
         alert.classList.add("alert");
         alert.style.backgroundColor = alertColor;
+
         textElement.innerText = message;
 
+        // Appending the elements to DOM
         alert.appendChild(textElement);
         document.body.appendChild(alert);
 
-        setTimeout(() => alert.remove(), 2000);
+        // Setting a timeout to remove the alert container
+        setTimeout(() => alert.remove(), 4000);
     };
     return { showAlert };
 })();
 
-// Player factory function
-const Player = function (name) {
-    const mark = "O";
-    return { name, mark };
-};
-
-let username;
-
 const startGame = function () {
     // Create Player
-    username = document.querySelector("#userName").value || "Guest";
-    const player = Player(username);
+    const username = document.querySelector("#userName").value || "Guest";
 
     // Initializing game
     gameController.renderBoard();
 
     // Greeting user
-    displayController.showAlert(`Welcome! ${player.name}`);
+    displayController.showAlert(`Welcome! ${username}`);
 
     // Some dom stuff
     document.querySelector("#start-game").style.display = "none";
@@ -139,6 +161,5 @@ const startGame = function () {
     document.querySelector(".user-data").style.display = "none";
 };
 const restartGame = function () {
-    const player = Player(username);
     gameController.restartGame();
 };
